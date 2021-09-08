@@ -1,0 +1,40 @@
+---
+title: "ODBC DSN by Folder Location"
+author: "Dykema, Bill"
+date: "2021/09/08"
+output:
+  html_document: default
+---
+
+## Notes:
+#### Set working directory: setwd("[Working Folder]")
+#### Knit to HTML for easy viewing: rmarkdown::render("roracle_odbc-select.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ODBC DSN by Folder Location Example
+#### This script shows how to set the Oracle ODBC DSN based on its current folder location
+
+# Load R libraries
+
+```{r libraries}
+## Load libraries
+
+#install.packages("RODBC")
+library(RODBC)
+
+```
+
+## Determine current folder location
+
+```{r folder_location}
+#
+```
+
+## Do the next thing
+
+```{r next_thing}
+#
+```

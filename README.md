@@ -9,7 +9,7 @@ R example writing to and reading from Oracle
 # Components
 - ## [roracle_odbc](https://github.com/DykemaBill/roracle/blob/main/roracle_odbc.R) :hammer_and_wrench:
     R script to test read/write from/to Oracle via ODBC connection
-- ## Not written yet - [roracle_odbc-select](https://github.com/DykemaBill/roracle/blob/main/roracle_odbc-select.R) :notebook:
+- ## Not written yet - [roracle_odbc-select](https://github.com/DykemaBill/roracle/blob/main/roracle_odbc-select.Rmd) :notebook:
     R Markdown example for selecting Oracle ODBC connection DSN based on folder location
-- ## Not written yet - [sampledata-excel-csv](https://github.com/DykemaBill/roracle/blob/main/sampledata-excel-csv.R) :notebook:
+- ## Not written yet - [sampledata-excel-csv](https://github.com/DykemaBill/roracle/blob/main/sampledata-excel-csv.Rmd) :notebook:
     R Markdown to generate some test data and write it to Excel and CSV files
