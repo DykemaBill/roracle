@@ -68,7 +68,7 @@ if (grepl("/PROD", env_folder, fixed = TRUE)) {       ## Contains "/PROD" in the
 ```{r dsn_test}
 
 # Table to use for test
-test_table = "testtable"
+test_table <- "testtable"
 
 # Query to use for test
 test_query <- sprintf("SELECT * FROM %s", test_table)
