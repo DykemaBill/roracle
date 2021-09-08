@@ -1,0 +1,59 @@
+---
+title: "ODBC DSN Set Using External R Script"
+author: "Dykema, Bill"
+date: "2021/09/08"
+output:
+  html_document: default
+---
+
+## Notes for exporting to HTML file:
+#### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
+#### Knit to HTML for easy viewing: rmarkdown::render("roracle_odbc-select.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ODBC DSN by Folder Location Example Using External R Script
+#### This script shows how to set the Oracle ODBC DSN by running an external script
+
+# Get Oracle ODBC DSN using external R script
+
+```{r external_script}
+
+source("roracle_odbc-select.R", local = knitr::knit_global())
+
+```
+
+# Load R libraries
+
+```{r libraries}
+
+## Load libraries
+
+# install.packages("RODBC")
+library(RODBC)
+
+```
+
+## DSN test
+
+```{r dsn_test}
+
+# Table to use for test
+test_table <- "testtable"
+
+# Query to use for test
+test_query <- sprintf("SELECT * FROM %s", test_table)
+
+# Connect to DSN string we were just given from environmental variable based on folder
+oracle_odbc <- odbcConnect(odbc_dsn)
+
+## Run test query
+records_test <- sqlQuery(oracle_odbc, test_query)
+
+## Display results of test query
+records_test
+
+```
