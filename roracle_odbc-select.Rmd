@@ -6,7 +6,7 @@ output:
   html_document: default
 ---
 
-## Notes:
+## Notes for exporting to HTML file:
 #### Set working directory: setwd("[Working Folder]")
 #### Knit to HTML for easy viewing: rmarkdown::render("roracle_odbc-select.Rmd", "all")
 
@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Load R libraries
 
 ```{r libraries}
+
 ## Load libraries
 
 #install.packages("RODBC")
@@ -27,14 +28,58 @@ library(RODBC)
 
 ```
 
+# Read server environmental variables for the Oracle ODBC DSN in each environment
+
+```{r variables}
+
+# Environments
+env_dsn_dev <- Sys.getenv("R_DSN_DEV")    ## Server environmental variable name for development Oracle ODBC DSN name
+env_dsn_crt <- Sys.getenv("R_DSN_CRT")    ## Server environmental variable name for test Oracle ODBC DSN name
+env_dsn_prod <- Sys.getenv("R_DSN_PROD")  ## Server environmental variable name for production Oracle ODBC DSN name
+
+```
+
 ## Determine current folder location
 
 ```{r folder_location}
-#
+
+# Current folder
+env_folder <- getwd()
+
 ```
 
-## Do the next thing
+## DSN set based on folder
 
-```{r next_thing}
-#
+```{r dsn_from_folder}
+
+# Set Oracle ODBC DSN based on folder
+if (grepl("/PROD", env_folder, fixed = TRUE)) {       ## Contains "/PROD" in the folder path
+  odbc_dsn <- env_dsn_prod
+} else if (grepl("/CRT", env_folder, fixed = TRUE)) { ## Contains "/CRT" in the folder path
+  odbc_dsn <- env_dsn_crt
+} else {                                                      ## Does not contain "/PROD" or "/CRT" in the folder path, must be Dev
+  odbc_dsn <- env_dsn_dev
+}
+
+```
+
+## DSN test
+
+```{r dsn_test}
+
+# Table to use for test
+test_table = "testtable"
+
+# Query to use for test
+test_query <- sprintf("SELECT * FROM %s", test_table)
+
+# Connect to DSN string we were just given from environmental variable based on folder
+oracle_odbc <- odbcConnect(odbc_dsn)
+
+## Run test query
+records_test <- sqlQuery(oracle_odbc, test_query)
+
+## Display results of test query
+records_test
+
 ```
