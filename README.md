@@ -3,10 +3,6 @@ R example writing to and reading from Oracle
 
 # Description
 
-R examples writing to and reading from Oracle, Excel and CSVs.
-
-# Description
-
 - Simple R applications to show how to write to and read from Oracle
 - R Markdown showing how to read/write from Excel/CSV/Oracle
 
