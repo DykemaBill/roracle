@@ -8,6 +8,7 @@ output:
 
 ## Notes for exporting to HTML file:
 #### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
 #### Knit to HTML for easy viewing: rmarkdown::render("roracle_odbc-select.Rmd", "all")
 
 ```{r setup, include=FALSE}
@@ -23,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Load libraries
 
-#install.packages("RODBC")
+# install.packages("RODBC")
 library(RODBC)
 
 ```
@@ -33,9 +34,9 @@ library(RODBC)
 ```{r variables}
 
 # Environments
-env_dsn_dev <- Sys.getenv("R_DSN_DEV")    ## Server environmental variable name for development Oracle ODBC DSN name
-env_dsn_crt <- Sys.getenv("R_DSN_CRT")    ## Server environmental variable name for test Oracle ODBC DSN name
-env_dsn_prod <- Sys.getenv("R_DSN_PROD")  ## Server environmental variable name for production Oracle ODBC DSN name
+env_dsn_dev <- Sys.getenv("R_DSN_DEV")    ## Server variable name for development Oracle ODBC DSN name
+env_dsn_crt <- Sys.getenv("R_DSN_CRT")    ## Server variable name for test Oracle ODBC DSN name
+env_dsn_prod <- Sys.getenv("R_DSN_PROD")  ## Server variable name for production Oracle ODBC DSN name
 
 ```
 
@@ -57,7 +58,7 @@ if (grepl("/PROD", env_folder, fixed = TRUE)) {       ## Contains "/PROD" in the
   odbc_dsn <- env_dsn_prod
 } else if (grepl("/CRT", env_folder, fixed = TRUE)) { ## Contains "/CRT" in the folder path
   odbc_dsn <- env_dsn_crt
-} else {                                              ## Does not contain "/PROD" or "/CRT" in the folder path, must be Dev
+} else {                                              ## Does not contain "/PROD" or "/CRT", must be Dev
   odbc_dsn <- env_dsn_dev
 }
 
