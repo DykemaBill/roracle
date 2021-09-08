@@ -57,7 +57,7 @@ if (grepl("/PROD", env_folder, fixed = TRUE)) {       ## Contains "/PROD" in the
   odbc_dsn <- env_dsn_prod
 } else if (grepl("/CRT", env_folder, fixed = TRUE)) { ## Contains "/CRT" in the folder path
   odbc_dsn <- env_dsn_crt
-} else {                                                      ## Does not contain "/PROD" or "/CRT" in the folder path, must be Dev
+} else {                                              ## Does not contain "/PROD" or "/CRT" in the folder path, must be Dev
   odbc_dsn <- env_dsn_dev
 }
 
