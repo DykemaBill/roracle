@@ -9,7 +9,7 @@ output:
 ## Notes for exporting to HTML file:
 #### Set working directory: setwd("[Working Folder]")
 #### install.packages("rmarkdown")
-#### Knit to HTML for easy viewing: rmarkdown::render("roracle_odbc-select.Rmd", "all")
+#### Knit to HTML for easy viewing: rmarkdown::render("roracle_odbc-external.Rmd", "all")
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
