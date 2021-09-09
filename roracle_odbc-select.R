@@ -1,8 +1,8 @@
----
-title: "ODBC DSN by Folder Location"
-author: "Dykema, Bill"
-date: "2021/09/08"
----
+######################################################################
+### title: "ODBC DSN by Folder Location"                           ###
+### author: "Dykema, Bill"                                         ###
+### date: "2021/09/08"                                             ###
+######################################################################
 
 # Read server variables for the Oracle ODBC DSN
 env_dsn_dev <- Sys.getenv("R_DSN_DEV")    # Dev Oracle ODBC DSN name
