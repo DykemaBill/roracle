@@ -23,6 +23,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Load libraries
 
+# Data analysis packages
+#install.packages("tidyverse")
+library(tidyverse)
+
 # Excel package
 # install.packages("xlsx")
 library(xlsx)
@@ -46,7 +50,7 @@ df_csv
 ```{r read_excel_file}
 
 ## Create DataFrame from Excel file
-df_excel <- read.xlsx("testtable_source.xlsx", sheetIndex=1)
+df_excel <- read.xlsx2("testtable_source.xlsx", sheetIndex=1)
 
 ## View your new DataFrame
 df_excel
@@ -59,6 +63,7 @@ df_excel
 
 ## Display DataFrame columns
 summary(df_csv)
+str(df_csv)
 
 ```
 
@@ -68,6 +73,15 @@ summary(df_csv)
 
 ## Display DataFrame columns
 summary(df_excel)
+str(df_excel)
+
+```
+
+## CSV Setup Columns
+
+```{r csv_columns_setup}
+
+df_csv[['TEST_DATETIME']] <- as.POSIXct(df_csv[['TEST_DATETIME']], format="%Y/%m/%d %H:%M:%S")
 
 ```
 
@@ -75,6 +89,29 @@ summary(df_excel)
 ```{r csv_to_excel}
 
 ## Send CSV DataFrame to Excel file
+write.xlsx2(df_csv, file='testtable_csv_export.xlsx')
 
+```
+
+## Write Excel to CSV
+```{r excel_to_csv}
+
+## Send Excel DataFrame to CSV file
+write.csv(df_excel, file='testtable_csv_export.csv')
+
+```
+
+## Excel and CSV Combine into Single Excel/CSV
+```{r excel_csv_combine}
+
+# Append two DataFrames
+df_excel_combined <- rbind(df_excel, df_csv)
+
+# View combined DataFrame
+df_excel_combined
+
+## Send combined DataFrame to Excel and CSV file
+write.xlsx2(df_excel_combined, file='testtable_combined_export.xlsx')
+write.csv(df_excel_combined, file='testtable_combined_export.csv')
 
 ```
