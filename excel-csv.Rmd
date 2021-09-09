@@ -1,0 +1,36 @@
+---
+title: "Excel to/from CSV Example"
+author: "Dykema, Bill"
+date: "2021/09/09"
+output:
+  html_document: default
+---
+
+## Notes for exporting to HTML file:
+#### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
+#### Knit to HTML for easy viewing: rmarkdown::render("excel-csv.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Excel and CSV read and write example
+
+## Read source files
+
+```{r read_files}
+
+## Read data from Excel file
+excel_test <- read.csv("testtable_source.xlsx", stringsAsFactors=FALSE)
+
+## Read data from CSV file
+csv_test <- read.csv("testtable_source.csv", stringsAsFactors=FALSE)
+
+## Display data from Excel
+summary(excel_test)
+
+## Display data from CSV
+summary(csv_test)
+
+```

@@ -15,5 +15,5 @@ R example writing to and reading from Oracle
     R Markdown example for selecting Oracle ODBC connection DSN based on folder location
 - ## [roracle_odbc-external](https://github.com/DykemaBill/roracle/blob/main/roracle_odbc-external.Rmd) :notebook: [HTML output](https://github.com/DykemaBill/roracle/blob/main/roracle_odbc-external.html)
     R Markdown example using external R script for selecting Oracle ODBC connection DSN based on folder location
-- ## Not written yet - [sampledata-excel-csv](https://github.com/DykemaBill/roracle/blob/main/sampledata-excel-csv.Rmd) :notebook:
-    R Markdown to generate some test data and write it to Excel and CSV files
+- ## [excel-csv](https://github.com/DykemaBill/roracle/blob/main/excel-csv.Rmd) :notebook:
+    R Markdown to read Excel/CSV and write them to CSV/Excel files

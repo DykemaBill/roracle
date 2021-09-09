@@ -5,7 +5,7 @@
 ######################################################################
 
 ## Read data from CSV file, not using this just yet
-csv_test <- read.csv("testtable_old.csv", stringsAsFactors=FALSE)
+csv_test <- read.csv("testtable_source.csv", stringsAsFactors=FALSE)
 
 ## Connect to Oracle ODBC DSN
 #install.packages("RODBC")
