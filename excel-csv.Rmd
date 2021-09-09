@@ -17,20 +17,64 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Excel and CSV read and write example
 
-## Read source files
+# Load R libraries
 
-```{r read_files}
+```{r libraries}
 
-## Read data from Excel file
-excel_test <- read.csv("testtable_source.xlsx", stringsAsFactors=FALSE)
+## Load libraries
 
-## Read data from CSV file
-csv_test <- read.csv("testtable_source.csv", stringsAsFactors=FALSE)
+# Excel package
+# install.packages("xlsx")
+library(xlsx)
 
-## Display data from Excel
-summary(excel_test)
+```
 
-## Display data from CSV
-summary(csv_test)
+## Read CSV file
+
+```{r read_csv_file}
+
+## Create DataFrame from CSV file
+df_csv <- read.csv("testtable_source.csv", stringsAsFactors=FALSE)
+
+## View your new DataFrame
+df_csv
+
+```
+
+## Read Excel file
+
+```{r read_excel_file}
+
+## Create DataFrame from Excel file
+df_excel <- read.xlsx("testtable_source.xlsx", sheetIndex=1)
+
+## View your new DataFrame
+df_excel
+
+```
+
+## CSV Columns
+
+```{r csv_columns}
+
+## Display DataFrame columns
+summary(df_csv)
+
+```
+
+## Excel Columns
+
+```{r excel_columns}
+
+## Display DataFrame columns
+summary(df_excel)
+
+```
+
+## Write CSV to Excel
+```{r csv_to_excel}
+
+## Send CSV DataFrame to Excel file
+
 
 ```
