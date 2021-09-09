@@ -1,10 +1,8 @@
----
-  title: "Oracle ODBC Test"
-author: "Dykema, Bill - DataTenant"
-date: "2021/08/18"
-output:
-  html_document: default
----
+######################################################################
+### title: "Oracle ODBC Test"                                      ###
+### author: "Dykema, Bill"                                         ###
+### date: "2021/08/18"                                             ###
+######################################################################
 
 ## Read data from CSV file, not using this just yet
 csv_test <- read.csv("testtable_old.csv", stringsAsFactors=FALSE)
