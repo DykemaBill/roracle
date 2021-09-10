@@ -81,7 +81,15 @@ str(df_excel)
 
 ```{r csv_columns_setup}
 
-df_csv[['TEST_DATETIME']] <- as.POSIXct(df_csv[['TEST_DATETIME']], format="%Y/%m/%d %H:%M:%S")
+# Copy DataFrame
+df_csv_transformed <- df_csv
+# Format date field in DataFrame
+df_csv_transformed[['TEST_DATETIME']] <- as.POSIXct(df_csv_transformed[['TEST_DATETIME']], format="%Y/%m/%d %H:%M:%S")
+
+# New option
+df_csv_dateparts = t(as.data.frame(strsplit(df_csv_transformed[['TEST_DATETIME']], " ")))
+row.names(df_csv_dateparts) = NULL
+df_csv_transformed[['TEST_DATETIME']] <- chron(dates=df_csv_dateparts[,1],times=df_csv_dateparts[,2], format=c('y/m/d', 'h:m:s'))
 
 ```
 
