@@ -27,9 +27,11 @@ knitr::opts_chunk$set(echo = TRUE)
 #install.packages("tidyverse")
 library(tidyverse)
 
-# Excel package
-# install.packages("xlsx")
+# Excel packages
+#install.packages("xlsx")
 library(xlsx)
+#install.packages("XLConnect")
+#library(XLConnect)
 
 ```
 
@@ -81,15 +83,31 @@ str(df_excel)
 
 ```{r csv_columns_setup}
 
-# Copy DataFrame
-df_csv_transformed <- df_csv
-# Format date field in DataFrame
-df_csv_transformed[['TEST_DATETIME']] <- as.POSIXct(df_csv_transformed[['TEST_DATETIME']], format="%Y/%m/%d %H:%M:%S")
+## Rename columns
+df_csv %>%
+  rename(test_datetime = TEST_DATETIME) %>%
+  rename(test_number = TEST_NUMBER) %>%
+  rename(test_text = TEST_TEXT) %>%
+  rename(record_added = RECORD_ADDED) ->
+df_csv_transformed
 
-# New option
-df_csv_dateparts = t(as.data.frame(strsplit(df_csv_transformed[['TEST_DATETIME']], " ")))
-row.names(df_csv_dateparts) = NULL
-df_csv_transformed[['TEST_DATETIME']] <- chron(dates=df_csv_dateparts[,1],times=df_csv_dateparts[,2], format=c('y/m/d', 'h:m:s'))
+```
+
+## Excel Setup Columns
+
+```{r excel_columns_setup}
+
+## Rename columns
+df_excel %>%
+  rename(test_datetime = TEST_DATETIME) %>%
+  rename(test_number = TEST_NUMBER) %>%
+  rename(test_text = TEST_TEXT) %>%
+  rename(record_added = RECORD_ADDED) ->
+df_excel_transformed
+
+## Format date fields in DataFrame
+df_excel_transformed[['test_datetime']] <- openxlsx::convertToDateTime(df_excel[['TEST_DATETIME']])
+df_excel_transformed[['record_added']] <- openxlsx::convertToDateTime(df_excel[['RECORD_ADDED']])
 
 ```
 
@@ -97,7 +115,7 @@ df_csv_transformed[['TEST_DATETIME']] <- chron(dates=df_csv_dateparts[,1],times=
 ```{r csv_to_excel}
 
 ## Send CSV DataFrame to Excel file
-write.xlsx2(df_csv, file='testtable_csv_export.xlsx')
+write.xlsx2(df_csv_transformed, file='testtable_csv_export.xlsx', row.names = FALSE)
 
 ```
 
@@ -105,21 +123,85 @@ write.xlsx2(df_csv, file='testtable_csv_export.xlsx')
 ```{r excel_to_csv}
 
 ## Send Excel DataFrame to CSV file
-write.csv(df_excel, file='testtable_csv_export.csv')
+write.csv(df_excel_transformed, file='testtable_csv_export.csv', row.names = FALSE)
 
 ```
 
-## Excel and CSV Combine into Single Excel/CSV
+## Excel/CSV Oldest and Latest Dates
+```{r excel_csv_oldlate}
+
+## Get oldest CSV date
+date_oldest_csv <- min(df_csv_transformed[['test_datetime']])
+cat (c("Oldest CSV date is...\n"))
+date_oldest_csv
+## Get newest Excel date
+date_newest_excel <- max(df_excel_transformed[['test_datetime']])
+cat (c("Newest Excel date is...\n"))
+date_newest_excel
+
+```
+
+## Write CSV transform to Excel
+```{r csv_transform}
+
+## Filter the CSV data
+df_csv_filtered <- df_csv_transformed[df_csv_transformed$test_datetime==date_oldest_csv,]
+## Select specific columns
+df_csv_filtered %>%
+  select(test_datetime, test_number) ->
+df_csv_filtered
+## Send part part of the CSV filtered DataFrame to Excel file
+write.xlsx2(df_csv_filtered, file='testtable_transformed_csv_export.xlsx', row.names = FALSE)
+
+```
+
+## Write Excel transform to CSV
+```{r excel_transform}
+
+## Filter the Excel data
+df_excel_filtered <- df_excel_transformed[df_excel_transformed$test_datetime==date_newest_excel,]
+## Select specific columns
+df_excel_filtered %>%
+  select(test_datetime, test_number) ->
+df_excel_filtered
+## Send part part of the Excel filtered DataFrame to CSV file
+write.csv(df_excel_filtered, file='testtable_transformed_excel_export.csv', row.names = FALSE)
+
+```
+
+## Excel/CSV Combine into Single Excel/CSV
 ```{r excel_csv_combine}
 
-# Append two DataFrames
-df_excel_combined <- rbind(df_excel, df_csv)
+## Append two DataFrames
+df_excel_combined <- rbind(df_excel_transformed, df_csv_transformed)
 
-# View combined DataFrame
+## View combined DataFrame
 df_excel_combined
 
 ## Send combined DataFrame to Excel and CSV file
-write.xlsx2(df_excel_combined, file='testtable_combined_export.xlsx')
-write.csv(df_excel_combined, file='testtable_combined_export.csv')
+write.xlsx2(df_excel_combined, file='testtable_combined_export.xlsx', row.names = FALSE)
+write.csv(df_excel_combined, file='testtable_combined_export.csv', row.names = FALSE)
+
+```
+
+## Write Two Seperate Data Sets to Excel in Seperate Sheets
+```{r excel_sheets}
+
+# Start XLConnect to allow us to append
+wb_excel <- loadWorkbook("testtable_sheets_export.xlsx")
+# Create sheet
+createSheet(wb_excel, name="CSVData")
+# Write to sheet
+writeWorksheet(wb_excel, df_csv_filtered, "CSVData", header = TRUE)
+# Create sheet
+createSheet(wb_excel, name="CSVData")
+# Write to sheet
+writeWorksheet(wb_excel, df_excel_filtered, "ExcelData", header = TRUE)
+# Save out to Excel file
+saveWorkbook(wb_excel)
+
+## Send date to Excel sheets
+#write.xlsx2(df_csv_filtered, file='testtable_sheets_export.xlsx', sheetName="CSVData", row.names = FALSE)
+#write.xlsx2(df_excel_filtered, file='testtable_sheets_export.xlsx', sheetName="ExcelData", row.names = FALSE)
 
 ```
