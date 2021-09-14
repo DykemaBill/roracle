@@ -30,8 +30,6 @@ library(tidyverse)
 # Excel packages
 #install.packages("xlsx")
 library(xlsx)
-#install.packages("XLConnect")
-#library(XLConnect)
 
 ```
 
@@ -187,21 +185,9 @@ write.csv(df_excel_combined, file='testtable_combined_export.csv', row.names = F
 ## Write Two Seperate Data Sets to Excel in Seperate Sheets
 ```{r excel_sheets}
 
-# Start XLConnect to allow us to append
-wb_excel <- loadWorkbook("testtable_sheets_export.xlsx")
-# Create sheet
-createSheet(wb_excel, name="CSVData")
-# Write to sheet
-writeWorksheet(wb_excel, df_csv_filtered, "CSVData", header = TRUE)
-# Create sheet
-createSheet(wb_excel, name="CSVData")
-# Write to sheet
-writeWorksheet(wb_excel, df_excel_filtered, "ExcelData", header = TRUE)
-# Save out to Excel file
-saveWorkbook(wb_excel)
-
 ## Send date to Excel sheets
-#write.xlsx2(df_csv_filtered, file='testtable_sheets_export.xlsx', sheetName="CSVData", row.names = FALSE)
-#write.xlsx2(df_excel_filtered, file='testtable_sheets_export.xlsx', sheetName="ExcelData", row.names = FALSE)
+excel_file <- "testtable_sheets_export.xlsx"
+write.xlsx2(df_csv_filtered, file=excel_file, sheetName="CSVData", row.names = FALSE)
+write.xlsx2(df_excel_filtered, file=excel_file, sheetName="ExcelData", row.names = FALSE, append=TRUE)
 
 ```
