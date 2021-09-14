@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # ODBC DSN by Folder Location Example
 #### This script shows how to set the Oracle ODBC DSN based on its current folder location
 
-# Load R libraries
+## Load R libraries
 
 ```{r libraries}
 
@@ -29,14 +29,14 @@ library(RODBC)
 
 ```
 
-# Read server environmental variables for the Oracle ODBC DSN in each environment
+## Read server environmental variables for the Oracle ODBC DSN in each environment
 
 ```{r variables}
 
 # Environments
 env_dsn_dev <- Sys.getenv("R_DSN_DEV")    ## Server variable name for development Oracle ODBC DSN name
 env_dsn_crt <- Sys.getenv("R_DSN_CRT")    ## Server variable name for test Oracle ODBC DSN name
-env_dsn_prod <- Sys.getenv("R_DSN_PROD")  ## Server variable name for production Oracle ODBC DSN name
+env_dsn_prd <- Sys.getenv("R_DSN_PRD")    ## Server variable name for production Oracle ODBC DSN name
 
 ```
 
@@ -54,11 +54,11 @@ env_folder <- getwd()
 ```{r dsn_from_folder}
 
 # Set Oracle ODBC DSN based on folder
-if (grepl("/PROD", env_folder, fixed = TRUE)) {       ## Contains "/PROD" in the folder path
-  odbc_dsn <- env_dsn_prod
+if (grepl("/PRD", env_folder, fixed = TRUE)) {       ## Contains "/PRD" in the folder path
+  odbc_dsn <- env_dsn_prd
 } else if (grepl("/CRT", env_folder, fixed = TRUE)) { ## Contains "/CRT" in the folder path
   odbc_dsn <- env_dsn_crt
-} else {                                              ## Does not contain "/PROD" or "/CRT", must be Dev
+} else {                                              ## Does not contain "/PRD" or "/CRT", must be Dev
   odbc_dsn <- env_dsn_dev
 }
 

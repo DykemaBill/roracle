@@ -18,23 +18,12 @@ knitr::opts_chunk$set(echo = TRUE)
 # ODBC DSN by Folder Location Example Using External R Script
 #### This script shows how to set the Oracle ODBC DSN by running an external script
 
-# Get Oracle ODBC DSN using external R script
+## Get Oracle ODBC DSN using external R script
 
 ```{r external_script}
 
 # This external script sets the odbc_dsn variable
 source("roracle_odbc-select.R", local = knitr::knit_global())
-
-```
-
-# Load R libraries
-
-```{r libraries}
-
-## Load libraries
-
-# install.packages("RODBC")
-library(RODBC)
 
 ```
 
