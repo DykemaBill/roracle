@@ -1,7 +1,7 @@
 ---
 title: "Excel/CSV to Oracle Example"
 author: "Dykema, Bill"
-date: "2021/09/14"
+date: "2021/09/15"
 output:
   html_document: default
 ---
@@ -21,8 +21,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r libraries}
 
-## Load libraries
-
 # Data analysis packages
 #install.packages("tidyverse")
 library(tidyverse)
@@ -41,10 +39,10 @@ library(RODBC)
 
 ```{r read_csv_file}
 
-## Create DataFrame from CSV file
+# Create DataFrame from CSV file
 df_csv <- read.csv("testtable_source.csv", stringsAsFactors=FALSE)
 
-## View your new DataFrame
+# View your new DataFrame
 df_csv
 
 ```
@@ -53,10 +51,10 @@ df_csv
 
 ```{r read_excel_file}
 
-## Create DataFrame from Excel file
+# Create DataFrame from Excel file
 df_excel <- read.xlsx2("testtable_source.xlsx", sheetIndex=1)
 
-## View your new DataFrame
+# View your new DataFrame
 df_excel
 
 ```
@@ -65,7 +63,7 @@ df_excel
 
 ```{r csv_columns}
 
-## Display DataFrame columns
+# Display DataFrame columns
 summary(df_csv)
 str(df_csv)
 
@@ -75,7 +73,7 @@ str(df_csv)
 
 ```{r excel_columns}
 
-## Display DataFrame columns
+# Display DataFrame columns
 summary(df_excel)
 str(df_excel)
 
@@ -99,7 +97,7 @@ df_csv_transformed
 
 ```{r excel_columns_setup}
 
-## Rename columns
+# Rename columns
 df_excel %>%
   rename(test_datetime = TEST_DATETIME) %>%
   rename(test_number = TEST_NUMBER) %>%
@@ -107,91 +105,72 @@ df_excel %>%
   rename(record_added = RECORD_ADDED) ->
 df_excel_transformed
 
-## Format date fields in DataFrame
+# Format date fields in DataFrame
 df_excel_transformed[['test_datetime']] <- openxlsx::convertToDateTime(df_excel[['TEST_DATETIME']])
 df_excel_transformed[['record_added']] <- openxlsx::convertToDateTime(df_excel[['RECORD_ADDED']])
 
 ```
 
-## Write CSV to Excel
-```{r csv_to_excel}
+## CSV Update Record Added Fields
+```{r csv_updated}
 
-## Send CSV DataFrame to Excel file
-write.xlsx2(df_csv_transformed, file='testtable_csv_export.xlsx', row.names = FALSE)
+# Get the current date/time
+now_is <- Sys.time()
 
-```
-
-## Write Excel to CSV
-```{r excel_to_csv}
-
-## Send Excel DataFrame to CSV file
-write.csv(df_excel_transformed, file='testtable_csv_export.csv', row.names = FALSE)
+# Populate the updated date/time
+df_csv_transformed[['record_added']] <- now_is
 
 ```
 
-## Excel/CSV Oldest and Latest Dates
-```{r excel_csv_oldlate}
+## Excel Update Record Added Fields
+```{r excel_updated}
 
-## Get oldest CSV date
-date_oldest_csv <- min(df_csv_transformed[['test_datetime']])
-cat (c("Oldest CSV date is...\n"))
-date_oldest_csv
-## Get newest Excel date
-date_newest_excel <- max(df_excel_transformed[['test_datetime']])
-cat (c("Newest Excel date is...\n"))
-date_newest_excel
+## Get the current date/time
+now_is <- Sys.time()
+
+## Populate the updated date/time
+df_excel_transformed[['record_added']] <- now_is
 
 ```
 
-## Write CSV transform to Excel
-```{r csv_transform}
+## Oracle Setup and Test
 
-## Filter the CSV data
-df_csv_filtered <- df_csv_transformed[df_csv_transformed$test_datetime==date_oldest_csv,]
-## Select specific columns
-df_csv_filtered %>%
-  select(test_datetime, test_number) ->
-df_csv_filtered
-## Send part part of the CSV filtered DataFrame to Excel file
-write.xlsx2(df_csv_filtered, file='testtable_transformed_csv_export.xlsx', row.names = FALSE)
+```{r oracle_setup_test}
 
-```
+# Connection string (assumes Oracle ODBC DSN is already configured)
+odbc_dsn <- "DSNNameHere"
 
-## Write Excel transform to CSV
-```{r excel_transform}
+# Table to use for test
+test_table <- "testtable"
 
-## Filter the Excel data
-df_excel_filtered <- df_excel_transformed[df_excel_transformed$test_datetime==date_newest_excel,]
-## Select specific columns
-df_excel_filtered %>%
-  select(test_datetime, test_number) ->
-df_excel_filtered
-## Send part part of the Excel filtered DataFrame to CSV file
-write.csv(df_excel_filtered, file='testtable_transformed_excel_export.csv', row.names = FALSE)
+# Query to use for test
+test_query <- sprintf("SELECT * FROM %s", test_table)
+
+# Connect to DSN string
+oracle_odbc <- odbcConnect(odbc_dsn)
+
+# Run test query
+df_oracle <- sqlQuery(oracle_odbc, test_query)
+
+# Display results of test query
+df_oracle
 
 ```
 
-## Excel/CSV Combine into Single Excel/CSV
-```{r excel_csv_combine}
+## Optional Drop Table before Loading Data
 
-## Append two DataFrames
-df_excel_combined <- rbind(df_excel_transformed, df_csv_transformed)
+```{r oracle_drop}
 
-## View combined DataFrame
-df_excel_combined
-
-## Send combined DataFrame to Excel and CSV file
-write.xlsx2(df_excel_combined, file='testtable_combined_export.xlsx', row.names = FALSE)
-write.csv(df_excel_combined, file='testtable_combined_export.csv', row.names = FALSE)
+# Drop table
+sqlDrop(oracle_odbc, test_table, errors=TRUE)
 
 ```
 
-## Write Two Seperate Data Sets to Excel in Seperate Sheets
-```{r excel_sheets}
+## Append CSV to Oracle
 
-## Send date to Excel sheets
-excel_file <- "testtable_sheets_export.xlsx"
-write.xlsx2(df_csv_filtered, file=excel_file, sheetName="CSVData", row.names = FALSE)
-write.xlsx2(df_excel_filtered, file=excel_file, sheetName="ExcelData", row.names = FALSE, append=TRUE)
+```{r csv_oracle_append}
+
+# Append CSV DataFrame to Oracle table
+
 
 ```
