@@ -28,6 +28,8 @@ library(tidyverse)
 # Excel packages
 #install.packages("xlsx")
 library(xlsx)
+#install.packages("openxlsx")
+library(openxlsx)
 
 ```
 
@@ -102,8 +104,8 @@ df_excel %>%
 df_excel_transformed
 
 # Format date fields in DataFrame
-df_excel_transformed[['test_datetime']] <- openxlsx::convertToDateTime(df_excel[['TEST_DATETIME']])
-df_excel_transformed[['record_added']] <- openxlsx::convertToDateTime(df_excel[['RECORD_ADDED']])
+df_excel_transformed[['test_datetime']] <- convertToDateTime(df_excel[['TEST_DATETIME']])
+df_excel_transformed[['record_added']] <- convertToDateTime(df_excel[['RECORD_ADDED']])
 
 ```
 
@@ -111,7 +113,7 @@ df_excel_transformed[['record_added']] <- openxlsx::convertToDateTime(df_excel[[
 ```{r csv_to_excel}
 
 # Send CSV DataFrame to Excel file
-write.xlsx2(df_csv_transformed, file='testtable_csv_export.xlsx', row.names = FALSE)
+write.xlsx2(df_csv_transformed, file='testtable_csv_export.xlsx', row.names=FALSE)
 
 ```
 
@@ -119,7 +121,7 @@ write.xlsx2(df_csv_transformed, file='testtable_csv_export.xlsx', row.names = FA
 ```{r excel_to_csv}
 
 # Send Excel DataFrame to CSV file
-write.csv(df_excel_transformed, file='testtable_csv_export.csv', row.names = FALSE)
+write.csv(df_excel_transformed, file='testtable_csv_export.csv', row.names=FALSE)
 
 ```
 
@@ -147,7 +149,7 @@ df_csv_filtered %>%
   select(test_datetime, test_number) ->
 df_csv_filtered
 # Send part part of the CSV filtered DataFrame to Excel file
-write.xlsx2(df_csv_filtered, file='testtable_transformed_csv_export.xlsx', row.names = FALSE)
+write.xlsx2(df_csv_filtered, file='testtable_transformed_csv_export.xlsx', row.names=FALSE)
 
 ```
 
@@ -161,7 +163,7 @@ df_excel_filtered %>%
   select(test_datetime, test_number) ->
 df_excel_filtered
 # Send part part of the Excel filtered DataFrame to CSV file
-write.csv(df_excel_filtered, file='testtable_transformed_excel_export.csv', row.names = FALSE)
+write.csv(df_excel_filtered, file='testtable_transformed_excel_export.csv', row.names=FALSE)
 
 ```
 
@@ -175,8 +177,8 @@ df_excel_combined <- rbind(df_excel_transformed, df_csv_transformed)
 df_excel_combined
 
 # Send combined DataFrame to Excel and CSV file
-write.xlsx2(df_excel_combined, file='testtable_combined_export.xlsx', row.names = FALSE)
-write.csv(df_excel_combined, file='testtable_combined_export.csv', row.names = FALSE)
+write.xlsx2(df_excel_combined, file='testtable_combined_export.xlsx', row.names=FALSE)
+write.csv(df_excel_combined, file='testtable_combined_export.csv', row.names=FALSE)
 
 ```
 
@@ -185,7 +187,7 @@ write.csv(df_excel_combined, file='testtable_combined_export.csv', row.names = F
 
 # Send date to Excel sheets
 excel_file <- "testtable_sheets_export.xlsx"
-write.xlsx2(df_csv_filtered, file=excel_file, sheetName="CSVData", row.names = FALSE)
-write.xlsx2(df_excel_filtered, file=excel_file, sheetName="ExcelData", row.names = FALSE, append=TRUE)
+write.xlsx2(df_csv_filtered, file=excel_file, sheetName="CSVData", row.names=FALSE)
+write.xlsx2(df_excel_filtered, file=excel_file, sheetName="ExcelData", row.names=FALSE, append=TRUE)
 
 ```

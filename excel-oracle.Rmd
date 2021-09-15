@@ -28,6 +28,8 @@ library(tidyverse)
 # Excel packages
 #install.packages("xlsx")
 library(xlsx)
+#install.packages("openxlsx")
+library(openxlsx)
 
 # ODBC package used for Oracle
 # install.packages("RODBC")
@@ -106,8 +108,8 @@ df_excel %>%
 df_excel_transformed
 
 # Format date fields in DataFrame
-df_excel_transformed[['test_datetime']] <- openxlsx::convertToDateTime(df_excel[['TEST_DATETIME']])
-df_excel_transformed[['record_added']] <- openxlsx::convertToDateTime(df_excel[['RECORD_ADDED']])
+df_excel_transformed[['test_datetime']] <- convertToDateTime(df_excel[['TEST_DATETIME']])
+df_excel_transformed[['record_added']] <- convertToDateTime(df_excel[['RECORD_ADDED']])
 
 ```
 
@@ -155,6 +157,9 @@ df_oracle <- sqlQuery(oracle_odbc, test_query)
 # Display results of test query
 df_oracle
 
+# Display table column types
+oracle_columns <- sqlColumns(oracle_odbc, test_table)
+
 ```
 
 ## Optional Drop Table before Loading Data
@@ -166,11 +171,44 @@ sqlDrop(oracle_odbc, test_table, errors=TRUE)
 
 ```
 
+## Set Field types
+
+```{r oracle_fields}
+
+# Set field types used in the Oracle table
+oracle_field_types <- as.character(as.character(c("varchar2", "date","int","varchar(50)","date")))
+names(oracle_field_types) <- as.character(oracle_columns$COLUMN_NAME)
+
+# Display Oracle field types to use
+oracle_field_types
+
+```
+
 ## Append CSV to Oracle
 
 ```{r csv_oracle_append}
 
-# Append CSV DataFrame to Oracle table
+# Append CSV DataFrame to Oracle table (NOT WORKING, NEED TO INCREMENT ROW NUMBERS?)
+sqlSave(oracle_odbc, df_csv_transformed, test_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
 
+```
+
+## Append Excel to Oracle
+
+```{r excel_oracle_append}
+
+# Append CSV DataFrame to Oracle table (NOT WORKING, NEED TO INCREMENT ROW NUMBERS?)
+sqlSave(oracle_odbc, df_excel_transformed, test_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
+
+```
+
+## Oracle Test for New Data
+```{r oracle_data_test}
+
+# Run test query
+df_oracle_new <- sqlQuery(oracle_odbc, test_query)
+
+# Display results of test query
+df_oracle_new
 
 ```
