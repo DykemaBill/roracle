@@ -37,18 +37,6 @@ library(RODBC)
 
 ```
 
-## Read CSV file
-
-```{r read_csv_file}
-
-# Create DataFrame from CSV file
-df_csv <- read.csv("testtable_source.csv", stringsAsFactors=FALSE)
-
-# View your new DataFrame
-df_csv
-
-```
-
 ## Read Excel file
 
 ```{r read_excel_file}
@@ -61,13 +49,15 @@ df_excel
 
 ```
 
-## CSV Columns
+## Read CSV file
 
-```{r csv_columns}
+```{r read_csv_file}
 
-# Display DataFrame columns
-summary(df_csv)
-str(df_csv)
+# Create DataFrame from CSV file
+df_csv <- read.csv("testtable_source.csv", stringsAsFactors=FALSE)
+
+# View your new DataFrame
+df_csv
 
 ```
 
@@ -81,17 +71,13 @@ str(df_excel)
 
 ```
 
-## CSV Setup Columns
+## CSV Columns
 
-```{r csv_columns_setup}
+```{r csv_columns}
 
-## Rename columns
-df_csv %>%
-  rename(test_datetime = TEST_DATETIME) %>%
-  rename(test_number = TEST_NUMBER) %>%
-  rename(test_text = TEST_TEXT) %>%
-  rename(record_added = RECORD_ADDED) ->
-df_csv_transformed
+# Display DataFrame columns
+summary(df_csv)
+str(df_csv)
 
 ```
 
@@ -113,14 +99,17 @@ df_excel_transformed[['record_added']] <- convertToDateTime(df_excel[['RECORD_AD
 
 ```
 
-## CSV Update Record Added Fields
-```{r csv_updated}
+## CSV Setup Columns
 
-# Get the current date/time
-now_is <- Sys.time()
+```{r csv_columns_setup}
 
-# Populate the updated date/time
-df_csv_transformed[['record_added']] <- now_is
+## Rename columns
+df_csv %>%
+  rename(test_datetime = TEST_DATETIME) %>%
+  rename(test_number = TEST_NUMBER) %>%
+  rename(test_text = TEST_TEXT) %>%
+  rename(record_added = RECORD_ADDED) ->
+df_csv_transformed
 
 ```
 
@@ -135,6 +124,17 @@ df_excel_transformed[['record_added']] <- now_is
 
 ```
 
+## CSV Update Record Added Fields
+```{r csv_updated}
+
+# Get the current date/time
+now_is <- Sys.time()
+
+# Populate the updated date/time
+df_csv_transformed[['record_added']] <- now_is
+
+```
+
 ## Oracle Setup and Test
 
 ```{r oracle_setup_test}
@@ -142,22 +142,24 @@ df_excel_transformed[['record_added']] <- now_is
 # Connection string (assumes Oracle ODBC DSN is already configured)
 odbc_dsn <- "DSNNameHere"
 
+# Connect to DSN string
+oracle_odbc <- odbcConnect(odbc_dsn)
+
 # Table to use for test
 test_table <- "testtable"
 
 # Query to use for test
 test_query <- sprintf("SELECT * FROM %s", test_table)
 
-# Connect to DSN string
-oracle_odbc <- odbcConnect(odbc_dsn)
-
 # Run test query
 df_oracle <- sqlQuery(oracle_odbc, test_query)
+# Alternatively you can use this, but it might not be compatible with all databases
+#df_oracle <- sqlFetch(oracle_odbc, test_table)
 
 # Display results of test query
 df_oracle
 
-# Display table column types
+# Display table column types (only needed for sqlSave)
 oracle_columns <- sqlColumns(oracle_odbc, test_table)
 
 ```
@@ -166,8 +168,18 @@ oracle_columns <- sqlColumns(oracle_odbc, test_table)
 
 ```{r oracle_drop}
 
+# Build statement
+oracle_drop <- sprintf("DROP TABLE %s", test_table)
+
 # Drop table
-sqlDrop(oracle_odbc, test_table, errors=TRUE)
+sqlQuery(oracle_odbc, oracle_drop)
+# Alternatively you can use this
+#sqlDrop(oracle_odbc, test_table, errors=TRUE)
+
+# Build statement to recreate empty table
+oracle_create <- sprintf("CREATE TABLE %s (test_datetime TIMESTAMP NOT NULL, test_number INT, test_text VARCHAR2(50), record_added TIMESTAMP)", test_table)
+# Create table
+sqlQuery(oracle_odbc, oracle_create)
 
 ```
 
@@ -175,21 +187,12 @@ sqlDrop(oracle_odbc, test_table, errors=TRUE)
 
 ```{r oracle_fields}
 
-# Set field types used in the Oracle table
-oracle_field_types <- as.character(as.character(c("varchar2", "date","int","varchar(50)","date")))
+# Set field types used in the Oracle table, only needed if using sqlSave
+oracle_field_types <- as.character(as.character(c("varchar2(255)", "varchar2(255)","int(38)","varchar2(255)","int(38)")))
 names(oracle_field_types) <- as.character(oracle_columns$COLUMN_NAME)
 
-# Display Oracle field types to use
+# Display Oracle field types to use if using sqlSave
 oracle_field_types
-
-```
-
-## Append CSV to Oracle
-
-```{r csv_oracle_append}
-
-# Append CSV DataFrame to Oracle table (NOT WORKING, NEED TO INCREMENT ROW NUMBERS?)
-sqlSave(oracle_odbc, df_csv_transformed, test_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
 
 ```
 
@@ -197,8 +200,33 @@ sqlSave(oracle_odbc, df_csv_transformed, test_table, rownames=TRUE, append=TRUE,
 
 ```{r excel_oracle_append}
 
-# Append CSV DataFrame to Oracle table (NOT WORKING, NEED TO INCREMENT ROW NUMBERS?)
-sqlSave(oracle_odbc, df_excel_transformed, test_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
+# Append Excel DataFrame to Oracle table
+for (dataframe_row in rownames(df_excel_transformed)) {
+  # Build SQL insert
+  oracle_record_add <- sprintf("INSERT INTO %s (test_datetime, test_number, test_text, record_added) VALUES (TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'), '%s', '%s', TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'))", test_table, df_excel_transformed[dataframe_row, "test_datetime"], df_excel_transformed[dataframe_row, "test_number"], df_excel_transformed[dataframe_row, "test_text"], df_excel_transformed[dataframe_row, "record_added"])
+  # Run SQL insert
+  sqlQuery(oracle_odbc, oracle_record_add)
+}
+
+# Alternatively you can use this rather than a loop, but it can be slower and not compatible with all databases
+#sqlSave(oracle_odbc, df_excel_transformed, test_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
+
+```
+
+## Append CSV to Oracle
+
+```{r csv_oracle_append}
+
+# Append CSV DataFrame to Oracle table
+for (dataframe_row in rownames(df_csv_transformed)) {
+  # Build SQL insert
+  oracle_record_add <- sprintf("INSERT INTO %s (test_datetime, test_number, test_text, record_added) VALUES (TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'), '%d', '%s', TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'))", test_table, df_csv_transformed[dataframe_row, "test_datetime"], df_csv_transformed[dataframe_row, "test_number"], df_csv_transformed[dataframe_row, "test_text"], df_csv_transformed[dataframe_row, "record_added"])
+  # Run SQL insert
+  sqlQuery(oracle_odbc, oracle_record_add)
+}
+
+# Alternatively you can use this rather than a loop, but it can be slower and not compatible with all databases
+#sqlSave(oracle_odbc, df_csv_transformed, test_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
 
 ```
 
@@ -210,5 +238,13 @@ df_oracle_new <- sqlQuery(oracle_odbc, test_query)
 
 # Display results of test query
 df_oracle_new
+
+```
+
+## Oracle Close Connection
+```{r oracle_close}
+
+# Close the Oracle connection
+close(oracle_odbc)
 
 ```

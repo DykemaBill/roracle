@@ -82,3 +82,11 @@ records_test <- sqlQuery(oracle_odbc, test_query)
 records_test
 
 ```
+
+## Oracle Close Connection
+```{r oracle_close}
+
+# Close the Oracle connection
+close(oracle_odbc)
+
+```
