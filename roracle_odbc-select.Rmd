@@ -32,9 +32,9 @@ library(RODBC)
 ```{r variables}
 
 # Environments
-env_dsn_dev <- Sys.getenv("R_DSN_DEV")    ## Server variable name for development Oracle ODBC DSN name
-env_dsn_crt <- Sys.getenv("R_DSN_CRT")    ## Server variable name for test Oracle ODBC DSN name
-env_dsn_prd <- Sys.getenv("R_DSN_PRD")    ## Server variable name for production Oracle ODBC DSN name
+env_dsn_dev <- Sys.getenv("R_DSN_DEV")    # Server variable name for development Oracle ODBC DSN name
+env_dsn_crt <- Sys.getenv("R_DSN_CRT")    # Server variable name for test Oracle ODBC DSN name
+env_dsn_prd <- Sys.getenv("R_DSN_PRD")    # Server variable name for production Oracle ODBC DSN name
 
 ```
 
@@ -52,11 +52,11 @@ env_folder <- getwd()
 ```{r dsn_from_folder}
 
 # Set Oracle ODBC DSN based on folder
-if (grepl("/PRD", env_folder, fixed = TRUE)) {       ## Contains "/PRD" in the folder path
+if (grepl("/PRD", env_folder, fixed = TRUE)) {        # Contains "/PRD" in the folder path
   odbc_dsn <- env_dsn_prd
-} else if (grepl("/CRT", env_folder, fixed = TRUE)) { ## Contains "/CRT" in the folder path
+} else if (grepl("/CRT", env_folder, fixed = TRUE)) { # Contains "/CRT" in the folder path
   odbc_dsn <- env_dsn_crt
-} else {                                              ## Does not contain "/PRD" or "/CRT", must be Dev
+} else {                                              # Does not contain "/PRD" or "/CRT", must be Dev
   odbc_dsn <- env_dsn_dev
 }
 

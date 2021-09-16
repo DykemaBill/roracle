@@ -40,10 +40,10 @@ test_query <- sprintf("SELECT * FROM %s", test_table)
 # Connect to DSN string we were just given from environmental variable based on folder
 oracle_odbc <- odbcConnect(odbc_dsn)
 
-## Run test query
+# Run test query
 records_test <- sqlQuery(oracle_odbc, test_query)
 
-## Display results of test query
+# Display results of test query
 records_test
 
 ```

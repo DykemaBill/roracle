@@ -372,20 +372,18 @@ pre code {
 <div id="this-script-shows-how-to-set-the-oracle-odbc-dsn-based-on-its-current-folder-location" class="section level4">
 <h4>This script shows how to set the Oracle ODBC DSN based on its current folder location</h4>
 </div>
-</div>
-<div id="load-r-libraries" class="section level1">
-<h1>Load R libraries</h1>
-<pre class="r"><code>## Load libraries
-
-# install.packages(&quot;RODBC&quot;)
+<div id="load-r-libraries" class="section level2">
+<h2>Load R libraries</h2>
+<pre class="r"><code># install.packages(&quot;RODBC&quot;)
 library(RODBC)</code></pre>
 </div>
-<div id="read-server-environmental-variables-for-the-oracle-odbc-dsn-in-each-environment" class="section level1">
-<h1>Read server environmental variables for the Oracle ODBC DSN in each environment</h1>
+<div id="read-server-environmental-variables-for-the-oracle-odbc-dsn-in-each-environment" class="section level2">
+<h2>Read server environmental variables for the Oracle ODBC DSN in each environment</h2>
 <pre class="r"><code># Environments
 env_dsn_dev &lt;- Sys.getenv(&quot;R_DSN_DEV&quot;)    ## Server variable name for development Oracle ODBC DSN name
 env_dsn_crt &lt;- Sys.getenv(&quot;R_DSN_CRT&quot;)    ## Server variable name for test Oracle ODBC DSN name
-env_dsn_prod &lt;- Sys.getenv(&quot;R_DSN_PROD&quot;)  ## Server variable name for production Oracle ODBC DSN name</code></pre>
+env_dsn_prd &lt;- Sys.getenv(&quot;R_DSN_PRD&quot;)    ## Server variable name for production Oracle ODBC DSN name</code></pre>
+</div>
 <div id="determine-current-folder-location" class="section level2">
 <h2>Determine current folder location</h2>
 <pre class="r"><code># Current folder
@@ -394,11 +392,11 @@ env_folder &lt;- getwd()</code></pre>
 <div id="dsn-set-based-on-folder" class="section level2">
 <h2>DSN set based on folder</h2>
 <pre class="r"><code># Set Oracle ODBC DSN based on folder
-if (grepl(&quot;/PROD&quot;, env_folder, fixed = TRUE)) {       ## Contains &quot;/PROD&quot; in the folder path
-  odbc_dsn &lt;- env_dsn_prod
+if (grepl(&quot;/PRD&quot;, env_folder, fixed = TRUE)) {       ## Contains &quot;/PRD&quot; in the folder path
+  odbc_dsn &lt;- env_dsn_prd
 } else if (grepl(&quot;/CRT&quot;, env_folder, fixed = TRUE)) { ## Contains &quot;/CRT&quot; in the folder path
   odbc_dsn &lt;- env_dsn_crt
-} else {                                              ## Does not contain &quot;/PROD&quot; or &quot;/CRT&quot;, must be Dev
+} else {                                              ## Does not contain &quot;/PRD&quot; or &quot;/CRT&quot;, must be Dev
   odbc_dsn &lt;- env_dsn_dev
 }</code></pre>
 </div>
@@ -413,61 +411,66 @@ test_query &lt;- sprintf(&quot;SELECT * FROM %s&quot;, test_table)
 # Connect to DSN string we were just given from environmental variable based on folder
 oracle_odbc &lt;- odbcConnect(odbc_dsn)
 
-## Run test query
+# Run test query
 records_test &lt;- sqlQuery(oracle_odbc, test_query)
 
-## Display results of test query
+# Display results of test query
 records_test</code></pre>
 <pre><code>##          TEST_DATETIME TEST_NUMBER                               TEST_TEXT
-## 1  2021-08-25 10:52:44      989769 Record added to Excel August 25 of 2021
-## 2  2021-08-25 10:52:44      900072 Record added to Excel August 25 of 2021
-## 3  2021-08-25 10:52:44      880571 Record added to Excel August 25 of 2021
-## 4  2021-08-25 10:52:44      201112 Record added to Excel August 25 of 2021
-## 5  2021-08-26 10:52:44      340974 Record added to Excel August 26 of 2021
-## 6  2021-08-26 10:52:44      704943 Record added to Excel August 26 of 2021
-## 7  2021-08-26 10:52:44      652007 Record added to Excel August 26 of 2021
-## 8  2021-08-26 10:52:44      169896 Record added to Excel August 26 of 2021
-## 9  2021-08-27 10:52:44      269378 Record added to Excel August 27 of 2021
-## 10 2021-08-27 10:52:44      863155 Record added to Excel August 27 of 2021
-## 11 2021-08-27 10:52:44      865828 Record added to Excel August 27 of 2021
-## 12 2021-08-27 10:52:44      984828 Record added to Excel August 27 of 2021
-## 13 2021-08-25 10:52:44      989769   Record added to CSV August 25 of 2021
-## 14 2021-08-25 10:52:44      900072   Record added to CSV August 25 of 2021
-## 15 2021-08-25 10:52:44      880571   Record added to CSV August 25 of 2021
-## 16 2021-08-25 10:52:44      201112   Record added to CSV August 25 of 2021
-## 17 2021-08-26 10:52:44      340974   Record added to CSV August 26 of 2021
-## 18 2021-08-26 10:52:44      704943   Record added to CSV August 26 of 2021
-## 19 2021-08-26 10:52:44      652007   Record added to CSV August 26 of 2021
-## 20 2021-08-26 10:52:44      169896   Record added to CSV August 26 of 2021
-## 21 2021-08-27 10:52:44      269378   Record added to CSV August 27 of 2021
-## 22 2021-08-27 10:52:44      863155   Record added to CSV August 27 of 2021
-## 23 2021-08-27 10:52:44      865828   Record added to CSV August 27 of 2021
-## 24 2021-08-27 10:52:44      984828   Record added to CSV August 27 of 2021
+## 1  2021-08-25 08:42:43      428514 Record added to Excel August 25 of 2021
+## 2  2021-08-25 08:42:43      904954 Record added to Excel August 25 of 2021
+## 3  2021-08-25 08:42:43      629890 Record added to Excel August 25 of 2021
+## 4  2021-08-25 08:42:43      326473 Record added to Excel August 25 of 2021
+## 5  2021-08-26 08:42:43      815098 Record added to Excel August 26 of 2021
+## 6  2021-08-26 08:42:43      301769 Record added to Excel August 26 of 2021
+## 7  2021-08-26 08:42:43      879650 Record added to Excel August 26 of 2021
+## 8  2021-08-26 08:42:43      737747 Record added to Excel August 26 of 2021
+## 9  2021-08-27 08:42:43      140170 Record added to Excel August 27 of 2021
+## 10 2021-08-27 08:42:43      246890 Record added to Excel August 27 of 2021
+## 11 2021-08-27 08:42:43      848615 Record added to Excel August 27 of 2021
+## 12 2021-08-27 08:42:43      813903 Record added to Excel August 27 of 2021
+## 13 2021-08-25 08:42:43      428514   Record added to CSV August 25 of 2021
+## 14 2021-08-25 08:42:43      904954   Record added to CSV August 25 of 2021
+## 15 2021-08-25 08:42:43      629890   Record added to CSV August 25 of 2021
+## 16 2021-08-25 08:42:43      326473   Record added to CSV August 25 of 2021
+## 17 2021-08-26 08:42:43      815098   Record added to CSV August 26 of 2021
+## 18 2021-08-26 08:42:43      301769   Record added to CSV August 26 of 2021
+## 19 2021-08-26 08:42:43      879650   Record added to CSV August 26 of 2021
+## 20 2021-08-26 08:42:43      737747   Record added to CSV August 26 of 2021
+## 21 2021-08-27 08:42:43      140170   Record added to CSV August 27 of 2021
+## 22 2021-08-27 08:42:43      246890   Record added to CSV August 27 of 2021
+## 23 2021-08-27 08:42:43      848615   Record added to CSV August 27 of 2021
+## 24 2021-08-27 08:42:43      813903   Record added to CSV August 27 of 2021
 ##           RECORD_ADDED
-## 1  2021-08-27 11:09:24
-## 2  2021-08-27 11:09:24
-## 3  2021-08-27 11:09:24
-## 4  2021-08-27 11:09:24
-## 5  2021-08-27 11:09:24
-## 6  2021-08-27 11:09:24
-## 7  2021-08-27 11:09:24
-## 8  2021-08-27 11:09:24
-## 9  2021-08-27 11:09:24
-## 10 2021-08-27 11:09:24
-## 11 2021-08-27 11:09:24
-## 12 2021-08-27 11:09:24
-## 13 2021-08-27 11:45:56
-## 14 2021-08-27 11:45:56
-## 15 2021-08-27 11:45:56
-## 16 2021-08-27 11:45:56
-## 17 2021-08-27 11:45:56
-## 18 2021-08-27 11:45:56
-## 19 2021-08-27 11:45:56
-## 20 2021-08-27 11:45:56
-## 21 2021-08-27 11:45:56
-## 22 2021-08-27 11:45:56
-## 23 2021-08-27 11:45:56
-## 24 2021-08-27 11:45:56</code></pre>
+## 1  2021-09-16 12:29:58
+## 2  2021-09-16 12:29:58
+## 3  2021-09-16 12:29:58
+## 4  2021-09-16 12:29:58
+## 5  2021-09-16 12:29:58
+## 6  2021-09-16 12:29:58
+## 7  2021-09-16 12:29:58
+## 8  2021-09-16 12:29:58
+## 9  2021-09-16 12:29:58
+## 10 2021-09-16 12:29:58
+## 11 2021-09-16 12:29:58
+## 12 2021-09-16 12:29:58
+## 13 2021-09-16 12:29:58
+## 14 2021-09-16 12:29:58
+## 15 2021-09-16 12:29:58
+## 16 2021-09-16 12:29:58
+## 17 2021-09-16 12:29:58
+## 18 2021-09-16 12:29:58
+## 19 2021-09-16 12:29:58
+## 20 2021-09-16 12:29:58
+## 21 2021-09-16 12:29:58
+## 22 2021-09-16 12:29:58
+## 23 2021-09-16 12:29:58
+## 24 2021-09-16 12:29:58</code></pre>
+</div>
+<div id="oracle-close-connection" class="section level2">
+<h2>Oracle Close Connection</h2>
+<pre class="r"><code># Close the Oracle connection
+close(oracle_odbc)</code></pre>
 </div>
 </div>
 
