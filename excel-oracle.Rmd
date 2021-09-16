@@ -18,7 +18,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # Excel/CSV to Oracle example
 
 ## Load R libraries
-
 ```{r libraries}
 
 # Data analysis packages
@@ -38,7 +37,6 @@ library(RODBC)
 ```
 
 ## Read Excel file
-
 ```{r read_excel_file}
 
 # Create DataFrame from Excel file
@@ -50,7 +48,6 @@ df_excel
 ```
 
 ## Read CSV file
-
 ```{r read_csv_file}
 
 # Create DataFrame from CSV file
@@ -62,7 +59,6 @@ df_csv
 ```
 
 ## Excel Columns
-
 ```{r excel_columns}
 
 # Display DataFrame columns
@@ -72,7 +68,6 @@ str(df_excel)
 ```
 
 ## CSV Columns
-
 ```{r csv_columns}
 
 # Display DataFrame columns
@@ -82,7 +77,6 @@ str(df_csv)
 ```
 
 ## Excel Setup Columns
-
 ```{r excel_columns_setup}
 
 # Rename columns
@@ -100,7 +94,6 @@ df_excel_transformed[['record_added']] <- convertToDateTime(df_excel[['RECORD_AD
 ```
 
 ## CSV Setup Columns
-
 ```{r csv_columns_setup}
 
 ## Rename columns
@@ -136,7 +129,6 @@ df_csv_transformed[['record_added']] <- now_is
 ```
 
 ## Oracle Setup and Test
-
 ```{r oracle_setup_test}
 
 # Connection string (assumes Oracle ODBC DSN is already configured)
@@ -165,7 +157,6 @@ oracle_columns <- sqlColumns(oracle_odbc, test_table)
 ```
 
 ## Optional Drop Table before Loading Data
-
 ```{r oracle_drop}
 
 # Build statement
@@ -184,7 +175,6 @@ sqlQuery(oracle_odbc, oracle_create)
 ```
 
 ## Set Field types
-
 ```{r oracle_fields}
 
 # Set field types used in the Oracle table, only needed if using sqlSave
@@ -197,7 +187,6 @@ oracle_field_types
 ```
 
 ## Append Excel to Oracle
-
 ```{r excel_oracle_append}
 
 # Append Excel DataFrame to Oracle table
@@ -214,7 +203,6 @@ for (dataframe_row in rownames(df_excel_transformed)) {
 ```
 
 ## Append CSV to Oracle
-
 ```{r csv_oracle_append}
 
 # Append CSV DataFrame to Oracle table

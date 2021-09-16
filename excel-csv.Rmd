@@ -18,7 +18,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # Excel and CSV read and write example
 
 ## Load R libraries
-
 ```{r libraries}
 
 # Data analysis packages
@@ -34,7 +33,6 @@ library(openxlsx)
 ```
 
 ## Read CSV file
-
 ```{r read_csv_file}
 
 # Create DataFrame from CSV file
@@ -46,7 +44,6 @@ df_csv
 ```
 
 ## Read Excel file
-
 ```{r read_excel_file}
 
 # Create DataFrame from Excel file
@@ -58,7 +55,6 @@ df_excel
 ```
 
 ## CSV Columns
-
 ```{r csv_columns}
 
 # Display DataFrame columns
@@ -68,7 +64,6 @@ str(df_csv)
 ```
 
 ## Excel Columns
-
 ```{r excel_columns}
 
 # Display DataFrame columns
@@ -78,7 +73,6 @@ str(df_excel)
 ```
 
 ## CSV Setup Columns
-
 ```{r csv_columns_setup}
 
 # Rename columns
@@ -92,7 +86,6 @@ df_csv_transformed
 ```
 
 ## Excel Setup Columns
-
 ```{r excel_columns_setup}
 
 # Rename columns
@@ -130,11 +123,11 @@ write.csv(df_excel_transformed, file='testtable_csv_export.csv', row.names=FALSE
 
 # Get oldest CSV date
 date_oldest_csv <- min(df_csv_transformed[['test_datetime']])
-cat (c("Oldest CSV date is...\n"))
+print("Oldest CSV date is...")
 date_oldest_csv
 # Get newest Excel date
 date_newest_excel <- max(df_excel_transformed[['test_datetime']])
-cat (c("Newest Excel date is...\n"))
+print("Newest Excel date is...\n")
 date_newest_excel
 
 ```

@@ -19,3 +19,5 @@ R example writing to and reading from Oracle
     R Markdown to read Excel/CSV and write them to CSV/Excel files
 - ## [excel-oracle](https://github.com/DykemaBill/roracle/blob/main/excel-oracle.Rmd) :notebook: [HTML output](https://github.com/DykemaBill/roracle/blob/main/excel-oracle.html)
     R Markdown to read Excel/CSV and write to Oracle
+- ## [oracle-excel](https://github.com/DykemaBill/roracle/blob/main/oracle-excel.Rmd) :notebook: [HTML output](https://github.com/DykemaBill/roracle/blob/main/oracle-excel.html)
+    R Markdown to read Oracle and write to Excel/CSV/Text files
