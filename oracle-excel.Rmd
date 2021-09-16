@@ -121,7 +121,7 @@ write.csv(df_oracle_transformed, file='testtable_oracle_export.csv', row.names=F
 # File name
 file_out <- "testtable_oracle_export.txt"
 
-# Filter header
+# File header
 write("This is a test file!", file_out)
 
 # DataFrame to Text Formatted
