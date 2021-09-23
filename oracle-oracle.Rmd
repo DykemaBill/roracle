@@ -1,0 +1,202 @@
+---
+title: "Oracle to Oracle Example"
+author: "Dykema, Bill"
+date: "2021/09/23"
+output:
+  html_document: default
+---
+
+## Notes for exporting to HTML file:
+#### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
+#### Knit to HTML for easy viewing: rmarkdown::render("oracle-oracle.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Oracle to Oracle example
+
+## Load R libraries
+```{r libraries}
+
+# ODBC package used for Oracle
+# install.packages("RODBC")
+library(RODBC)
+
+# Data analysis packages
+#install.packages("tidyverse")
+library(tidyverse)
+
+```
+
+## Oracle Setup
+```{r oracle_setup}
+
+# Connection string (assumes Oracle ODBC DSN is already configured)
+odbc_dsn <- "DSNNameHere"
+
+# Connect to DSN string
+oracle_odbc <- odbcConnect(odbc_dsn)
+
+```
+
+## Read Oracle Table
+```{r oracle_read}
+
+# Table to use
+oracle_table <- "testtable"
+
+# Query to use
+oracle_query <- sprintf("SELECT * FROM %s", oracle_table)
+
+# Run query
+df_oracle <- sqlQuery(oracle_odbc, oracle_query)
+# Alternatively you can use this, but it might not be compatible with all databases
+#df_oracle <- sqlFetch(oracle_odbc, oracle_table)
+
+# Display results of test query
+df_oracle
+
+# Display table column types (only needed for sqlSave)
+oracle_columns <- sqlColumns(oracle_odbc, oracle_table)
+
+```
+
+## Oracle Setup Columns
+```{r excel_columns_setup}
+
+# Rename columns
+df_oracle %>%
+  rename(test_datetime = TEST_DATETIME) %>%
+  rename(test_number = TEST_NUMBER) %>%
+  rename(test_text = TEST_TEXT) %>%
+  rename(record_added = RECORD_ADDED) ->
+df_oracle_transformed
+
+```
+
+## Oracle Columns
+```{r oracle_columns}
+
+# Display DataFrame columns
+summary(df_oracle_transformed)
+str(df_oracle_transformed)
+
+```
+
+## Update Record Added Fields
+```{r oracle_updated}
+
+## Get the current date/time
+now_is <- Sys.time()
+
+## Populate the updated date/time
+df_oracle_transformed[['record_added']] <- now_is
+
+```
+
+## Optional Drop Table before Loading Data
+```{r oracle_drop}
+
+# Build statement
+oracle_drop <- sprintf("DROP TABLE %s", oracle_table)
+
+# Drop table
+sqlQuery(oracle_odbc, oracle_drop)
+# Alternatively you can use this
+#sqlDrop(oracle_odbc, oracle_table, errors=TRUE)
+
+# Build statement to recreate empty table
+oracle_create <- sprintf("CREATE TABLE %s (test_datetime TIMESTAMP NOT NULL, test_number INT, test_text VARCHAR2(50), record_added TIMESTAMP)", oracle_table)
+# Create table
+sqlQuery(oracle_odbc, oracle_create)
+
+```
+
+## Set Field types
+```{r oracle_fields}
+
+# Set field types used in the Oracle table, only needed if using sqlSave
+oracle_field_types <- as.character(as.character(c("varchar2(255)", "varchar2(255)","int(38)","varchar2(255)","int(38)")))
+names(oracle_field_types) <- as.character(oracle_columns$COLUMN_NAME)
+
+# Display Oracle field types to use if using sqlSave
+oracle_field_types
+
+```
+
+## Append Oracle to Oracle
+```{r oracle_append}
+
+# Append Oracle DataFrame to Oracle table
+for (dataframe_row in rownames(df_oracle_transformed)) {
+  # Build SQL insert
+  oracle_record_add <- sprintf("INSERT INTO %s (test_datetime, test_number, test_text, record_added) VALUES (TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'), '%s', '%s', TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'))", oracle_table, df_oracle_transformed[dataframe_row, "test_datetime"], df_oracle_transformed[dataframe_row, "test_number"], df_oracle_transformed[dataframe_row, "test_text"], df_oracle_transformed[dataframe_row, "record_added"])
+  # Run SQL insert
+  sqlQuery(oracle_odbc, oracle_record_add)
+}
+
+# Alternatively you can use this rather than a loop, but it can be slower and not compatible with all databases
+#sqlSave(oracle_odbc, df_oracle_transformed, oracle_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
+
+```
+
+## Oracle Test for New Data
+```{r oracle_data_test}
+
+# Run test query
+df_oracle_new <- sqlQuery(oracle_odbc, oracle_query)
+
+# Display results of test query
+df_oracle_new
+
+```
+
+## Oracle Oldest and Latest Dates
+```{r oracle_oldlate}
+
+# Get oldest Oracle date
+date_oldest <- min(df_oracle_transformed[['test_datetime']])
+print("Oldest Oracle date is...")
+date_oldest
+
+```
+
+## Write Oracle transform to Oracle
+```{r oracle_transform_oracle}
+
+# Filter the Oracle data
+df_oracle_filtered <- df_oracle_transformed[df_oracle_transformed$test_datetime==date_oldest,]
+
+# Append filtered Oracle DataFrame to Oracle table
+for (dataframe_row in rownames(df_oracle_filtered)) {
+  # Build SQL insert
+  oracle_record_add <- sprintf("INSERT INTO %s (test_datetime, test_number, test_text, record_added) VALUES (TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'), '%s', '%s', TO_DATE('%s', 'YYYY/MM/DD HH24:MI:SS'))", oracle_table, df_oracle_filtered[dataframe_row, "test_datetime"], df_oracle_filtered[dataframe_row, "test_number"], df_oracle_filtered[dataframe_row, "test_text"], df_oracle_filtered[dataframe_row, "record_added"])
+  # Run SQL insert
+  sqlQuery(oracle_odbc, oracle_record_add)
+}
+
+# Alternatively you can use this rather than a loop, but it can be slower and not compatible with all databases
+#sqlSave(oracle_odbc, df_oracle_filtered, oracle_table, rownames=TRUE, append=TRUE, varTypes=oracle_field_types, verbose=TRUE)
+
+```
+
+## Oracle Test for Appended Data
+```{r oracle_transform_appended}
+
+# Run test query
+df_oracle_appended <- sqlQuery(oracle_odbc, oracle_query)
+
+# Display results of test query
+df_oracle_appended
+
+```
+
+## Oracle Close Connection
+```{r oracle_close}
+
+# Close the Oracle connection
+close(oracle_odbc)
+
+```
