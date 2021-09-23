@@ -23,3 +23,5 @@ R example writing to and reading from Oracle
     R Markdown to read Oracle and write to Excel/CSV/Text files
 - ## [oracle-oracle](https://github.com/DykemaBill/roracle/blob/main/oracle-oracle.Rmd) :notebook: [HTML output](https://github.com/DykemaBill/roracle/blob/main/oracle-oracle.html)
     R Markdown to read Oracle and write to Oracle
+- ## [api-excel](https://github.com/DykemaBill/roracle/blob/main/api-excel.Rmd) :notebook: [HTML output](https://github.com/DykemaBill/roracle/blob/main/api-excel.html)
+    R Markdown to read from API and write to Excel/CSV files

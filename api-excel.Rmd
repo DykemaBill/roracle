@@ -1,0 +1,105 @@
+---
+title: "API to Excel/CSV Example"
+author: "Dykema, Bill"
+date: "2021/09/23"
+output:
+  html_document: default
+---
+
+## Notes for exporting to HTML file:
+#### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
+#### Knit to HTML for easy viewing: rmarkdown::render("api-excel.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# API to Excel/CSV example
+
+## Load R libraries
+```{r libraries}
+
+# GET request packages for reading from the API
+#install.packages("httr")
+library(httr)
+
+# JSON converter
+#install.packages("jsonlite")
+library(jsonlite)
+
+# Data analysis packages
+#install.packages("tidyverse")
+library(tidyverse)
+
+# Excel packages
+#install.packages("xlsx")
+library(xlsx)
+#install.packages("openxlsx")
+library(openxlsx)
+
+```
+
+## API Connect and Pull Data
+```{r read_api}
+
+# API URL build
+drought_area <- "USStatistics"
+drought_type <- "GetDroughtSeverityStatisticsByArea"
+drought_aoi <- "us"
+drought_start <- "8/10/2021"
+drought_end <- "8/20/2021"
+drought_stat <- "1"
+drought_url <- sprintf("https://usdmdataservices.unl.edu/api/%s/%s?aoi=%s&startdate=%s&enddate=%s&statisticsType=%s", drought_area, drought_type, drought_aoi, drought_start, drought_end, drought_stat)
+# Send API request
+drought_data <- GET(drought_url)
+# Check URL status (200 is good)
+drought_data
+# Convert to DataFrame
+df_drought <- fromJSON(content(drought_data, "text"), flatten=TRUE)
+# View new DataFrame
+df_drought
+
+```
+
+## API Columns
+```{r api_columns}
+
+# Display DataFrame columns
+summary(df_drought)
+str(df_drought)
+
+```
+
+# Format Fields
+```{r api_columns_setup}
+
+# Copy DataFrame
+df_drought_transformed <- df_drought
+
+# Character to Date/Time (LEFT OFF HERE, ToDateTime not working with API data, worked with Excel)
+df_drought_transformed[['MapDate']] <- convertToDateTime(df_drought[['MapDate']])
+df_drought_transformed[['ValidStart']] <- convertToDateTime(df_drought[['ValidStart']])
+df_drought_transformed[['ValidEnd']] <- convertToDateTime(df_drought[['ValidEnd']])
+# Remove all commas in field values
+???
+# Character to Float
+???
+
+```
+
+## Write API to Excel
+```{r api_to_excel}
+
+# Send API DataFrame to Excel file
+write.xlsx2(df_drought_transformed, file='testtable_api_export.xlsx', row.names=FALSE)
+
+```
+
+## Write API to CSV
+```{r api_to_csv}
+
+# Send API DataFrame to CSV file
+write.csv(df_drought_transformed, file='testtable_api_export.csv', row.names=FALSE)
+
+```
