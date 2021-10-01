@@ -160,7 +160,7 @@ sqlQuery(oracle_odbc, oracle_create)
 ## Append API data to Oracle
 ```{r api_oracle_append}
 
-# Append Excel DataFrame to Oracle table
+# Append API DataFrame to Oracle table
 for (dataframe_row in rownames(df_drought_transformed)) {
   # Build SQL insert
   oracle_record_add <- sprintf("INSERT INTO %s (MapDate, AreaOfInterest, None, D0, D1, D2, D3, D4, ValidStart, ValidEnd, StatisticFormatID, record_added) VALUES (TO_DATE('%s', 'YYYY-MM-DD'), '%s', '%d', '%d', '%d', '%d', '%d', '%d', TO_DATE('%s', 'YYYY-MM-DD'), TO_DATE('%s', 'YYYY-MM-DD'), '%s')", test_table, df_drought_transformed[dataframe_row, "MapDate"], df_drought_transformed[dataframe_row, "AreaOfInterest"], df_drought_transformed[dataframe_row, "None"], df_drought_transformed[dataframe_row, "D0"], df_drought_transformed[dataframe_row, "D1"], df_drought_transformed[dataframe_row, "D2"], df_drought_transformed[dataframe_row, "D3"], df_drought_transformed[dataframe_row, "D4"], df_drought_transformed[dataframe_row, "ValidStart"], df_drought_transformed[dataframe_row, "ValidEnd"], df_drought_transformed[dataframe_row, "StatisticFormatID"], df_drought_transformed[dataframe_row, "record_added"])
