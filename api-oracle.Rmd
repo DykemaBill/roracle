@@ -1,0 +1,190 @@
+---
+title: "API to Oracle Example"
+author: "Dykema, Bill"
+date: "2021/10/01"
+output:
+  html_document: default
+---
+
+## Notes for exporting to HTML file:
+#### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
+#### Knit to HTML for easy viewing: rmarkdown::render("api-oracle.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# API to Oracle example
+
+## Load R libraries
+```{r libraries}
+
+# GET request packages for reading from the API
+#install.packages("httr")
+library(httr)
+
+# JSON converter
+#install.packages("jsonlite")
+library(jsonlite)
+
+# Data analysis packages
+#install.packages("tidyverse")
+library(tidyverse)
+
+# ODBC package used for Oracle
+# install.packages("RODBC")
+library(RODBC)
+
+```
+
+## API Connect and Pull Data
+```{r read_api}
+
+# API URL build
+drought_area <- "USStatistics"
+drought_type <- "GetDroughtSeverityStatisticsByArea"
+drought_aoi <- "us"
+drought_start <- "8/10/2021"
+drought_end <- "8/20/2021"
+drought_stat <- "1"
+drought_url <- sprintf("https://usdmdataservices.unl.edu/api/%s/%s?aoi=%s&startdate=%s&enddate=%s&statisticsType=%s", drought_area, drought_type, drought_aoi, drought_start, drought_end, drought_stat)
+# Send API request
+drought_data <- GET(drought_url)
+# Check URL status (200 is good)
+drought_data
+# Convert to DataFrame
+df_drought <- fromJSON(content(drought_data, "text"), flatten=TRUE)
+# View new DataFrame
+df_drought
+
+```
+
+## API Columns
+```{r api_columns}
+
+# Display DataFrame columns
+summary(df_drought)
+str(df_drought)
+
+```
+
+# Format Fields
+```{r api_columns_setup}
+
+# Copy DataFrame
+df_drought_transformed <- df_drought
+
+# Character to Date/Time
+df_drought_transformed[['MapDate']] <- parse_date(df_drought[['MapDate']], '%Y%m%d')
+df_drought_transformed[['ValidStart']] <- parse_date(df_drought[['ValidStart']], '%Y-%m-%d')
+df_drought_transformed[['ValidEnd']] <- parse_date(df_drought[['ValidEnd']], '%Y-%m-%d')
+# Remove commas in field values
+df_drought_transformed[['None']] <- as.numeric(gsub(",","",df_drought[['None']]))
+df_drought_transformed[['D0']] <- as.numeric(gsub(",","",df_drought[['D0']]))
+df_drought_transformed[['D1']] <- as.numeric(gsub(",","",df_drought[['D1']]))
+df_drought_transformed[['D2']] <- as.numeric(gsub(",","",df_drought[['D2']]))
+df_drought_transformed[['D3']] <- as.numeric(gsub(",","",df_drought[['D3']]))
+df_drought_transformed[['D4']] <- as.numeric(gsub(",","",df_drought[['D4']]))
+# View DataFrame
+df_drought_transformed
+
+# Display default may appear to cut-off decimals, you can override this
+#options(digits=20)
+#df_drought_transformed
+
+```
+
+## Transformed Columns
+```{r transformed_columns}
+
+# Display DataFrame columns
+summary(df_drought_transformed)
+str(df_drought_transformed)
+
+```
+
+## Add Record Added Field
+```{r transformed_record_added}
+
+## Get the current date/time
+now_is <- Sys.time()
+
+## Populate the updated date/time
+df_drought_transformed[['record_added']] <- now_is
+
+```
+
+## Oracle Setup and Test
+```{r oracle_setup_test}
+
+# Connection string (assumes Oracle ODBC DSN is already configured)
+odbc_dsn <- "DSNNameHere"
+
+# Connect to DSN string
+oracle_odbc <- odbcConnect(odbc_dsn)
+
+# Table to use for test
+test_table <- "apitable"
+
+# Query to use for test
+test_query <- sprintf("SELECT * FROM %s", test_table)
+
+# Run test query
+df_oracle <- sqlQuery(oracle_odbc, test_query)
+
+# Display results of test query
+df_oracle
+
+# Display table column types (only needed for sqlSave)
+oracle_columns <- sqlColumns(oracle_odbc, test_table)
+
+```
+
+## Optional Drop Table before Loading Data
+```{r oracle_drop}
+
+# Build statement
+oracle_drop <- sprintf("DROP TABLE %s", test_table)
+
+# Drop table
+sqlQuery(oracle_odbc, oracle_drop)
+
+# Build statement to recreate empty table
+oracle_create <- sprintf("CREATE TABLE %s (MapDate DATE NOT NULL, AreaOfInterest VARCHAR2(50), None NUMBER(10,2), D0 NUMBER(10,2), D1 NUMBER(10,2), D2 NUMBER(10,2), D3 NUMBER(10,2), D4 NUMBER(10,2), ValidStart DATE, ValidEnd DATE, StatisticFormatID VARCHAR2(50), record_added TIMESTAMP)", test_table)
+# Create table
+sqlQuery(oracle_odbc, oracle_create)
+
+```
+
+## Append API data to Oracle
+```{r api_oracle_append}
+
+# Append Excel DataFrame to Oracle table
+for (dataframe_row in rownames(df_drought_transformed)) {
+  # Build SQL insert
+  oracle_record_add <- sprintf("INSERT INTO %s (MapDate, AreaOfInterest, None, D0, D1, D2, D3, D4, ValidStart, ValidEnd, StatisticFormatID, record_added) VALUES (TO_DATE('%s', 'YYYY-MM-DD'), '%s', '%d', '%d', '%d', '%d', '%d', '%d', TO_DATE('%s', 'YYYY-MM-DD'), TO_DATE('%s', 'YYYY-MM-DD'), '%s')", test_table, df_drought_transformed[dataframe_row, "MapDate"], df_drought_transformed[dataframe_row, "AreaOfInterest"], df_drought_transformed[dataframe_row, "None"], df_drought_transformed[dataframe_row, "D0"], df_drought_transformed[dataframe_row, "D1"], df_drought_transformed[dataframe_row, "D2"], df_drought_transformed[dataframe_row, "D3"], df_drought_transformed[dataframe_row, "D4"], df_drought_transformed[dataframe_row, "ValidStart"], df_drought_transformed[dataframe_row, "ValidEnd"], df_drought_transformed[dataframe_row, "StatisticFormatID"], df_drought_transformed[dataframe_row, "record_added"])
+  # Run SQL insert
+  sqlQuery(oracle_odbc, oracle_record_add)
+}
+
+```
+
+## Oracle Test for New Data
+```{r oracle_data_test}
+
+# Run test query
+df_oracle_new <- sqlQuery(oracle_odbc, test_query)
+
+# Display results of test query
+df_oracle_new
+
+```
+
+## Oracle Close Connection
+```{r oracle_close}
+
+# Close the Oracle connection
+close(oracle_odbc)
+
+```
