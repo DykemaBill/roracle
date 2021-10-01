@@ -1,7 +1,7 @@
 ---
 title: "API to Excel/CSV Example"
 author: "Dykema, Bill"
-date: "2021/09/23"
+date: "2021/10/01"
 output:
   html_document: default
 ---
@@ -77,14 +77,32 @@ str(df_drought)
 # Copy DataFrame
 df_drought_transformed <- df_drought
 
-# Character to Date/Time (LEFT OFF HERE, ToDateTime not working with API data, worked with Excel)
-df_drought_transformed[['MapDate']] <- convertToDateTime(df_drought[['MapDate']])
-df_drought_transformed[['ValidStart']] <- convertToDateTime(df_drought[['ValidStart']])
-df_drought_transformed[['ValidEnd']] <- convertToDateTime(df_drought[['ValidEnd']])
-# Remove all commas in field values
-???
-# Character to Float
-???
+# Character to Date/Time
+df_drought_transformed[['MapDate']] <- parse_date(df_drought[['MapDate']], '%Y%m%d')
+df_drought_transformed[['ValidStart']] <- parse_date(df_drought[['ValidStart']], '%Y-%m-%d')
+df_drought_transformed[['ValidEnd']] <- parse_date(df_drought[['ValidEnd']], '%Y-%m-%d')
+# Remove commas in field values
+df_drought_transformed[['None']] <- as.numeric(gsub(",","",df_drought[['None']]))
+df_drought_transformed[['D0']] <- as.numeric(gsub(",","",df_drought[['D0']]))
+df_drought_transformed[['D1']] <- as.numeric(gsub(",","",df_drought[['D1']]))
+df_drought_transformed[['D2']] <- as.numeric(gsub(",","",df_drought[['D2']]))
+df_drought_transformed[['D3']] <- as.numeric(gsub(",","",df_drought[['D3']]))
+df_drought_transformed[['D4']] <- as.numeric(gsub(",","",df_drought[['D4']]))
+# View DataFrame
+df_drought_transformed
+
+# Display default may appear to cut-off decimals, you can override this
+#options(digits=20)
+#df_drought_transformed
+
+```
+
+## Transformed Columns
+```{r transformed_columns}
+
+# Display DataFrame columns
+summary(df_drought_transformed)
+str(df_drought_transformed)
 
 ```
 
