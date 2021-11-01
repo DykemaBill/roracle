@@ -1,0 +1,70 @@
+---
+title: "Excel to Email Example"
+author: "Dykema, Bill"
+date: "2021/10/31"
+output:
+  html_document: default
+---
+
+## Notes for exporting to HTML file:
+#### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
+#### Knit to HTML for easy viewing: rmarkdown::render("excel-email.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Excel and CSV read and write example
+
+## Load R libraries
+```{r libraries}
+
+# Excel packages
+#install.packages("xlsx")
+library(xlsx)
+
+# Email package
+#install.packages("mailR")
+library(mailR)
+
+```
+
+## Read Excel file
+```{r read_excel_file}
+
+# Excel file name
+df_excel_filename <- "testtable_source.xlsx"
+
+# Create DataFrame from Excel file
+df_excel <- read.xlsx2(df_excel_filename, sheetIndex=1)
+
+# View your new DataFrame
+df_excel
+
+```
+
+## Email Excel file
+```{r excel_email}
+
+# Setup email
+email_smtp <- "[SMTP Server Name Here]"
+email_sender <- "[from@somewhere.com]"
+email_receiver <- "[to@somewhere.com]"
+email_subject <- "[Email subject here]"
+email_message <- "[This is where email message text goes!]"
+# Attachment file
+email_attachment <- df_excel_filename
+
+# Send email
+send.mail(
+  from = email_sender, 
+  to = email_receiver, 
+  subject = email_subject,
+  Sys.Date(),
+  "{}", body = email_message, encoding = "utf-8",
+  smtp = list(host.name = email_smtp, port = 25, ssl=TRUE), 
+  authenticate = FALSE, send = TRUE,
+  attach.files = c(email_attachment), html = FALSE, inline = FALSE)
+
+```
