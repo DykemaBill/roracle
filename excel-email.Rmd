@@ -63,7 +63,7 @@ send.mail(
   subject = email_subject,
   Sys.Date(),
   "{}", body = email_message, encoding = "utf-8",
-  smtp = list(host.name = email_smtp, port = 25, ssl=TRUE), 
+  smtp = list(host.name = email_smtp, port = 25, ssl=FALSE), 
   authenticate = FALSE, send = TRUE,
   attach.files = c(email_attachment), html = FALSE, inline = FALSE)
 
