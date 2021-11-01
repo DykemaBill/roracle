@@ -41,9 +41,31 @@ df_excel
 
 ```
 
-## FTP Excel file
-```{r ftp_email}
+## FTP Setup
+```{r ftp_setup}
 
-# Setup?
+# FTP site details
+ftp_server <- "ftp.servername.com"
+ftp_user <- "username"
+ftp_pass <- "password"
+ftp_path <- "~"
+
+```
+
+## FTP Upload Excel file
+```{r ftp_upload}
+
+# FTP upload
+
+
+```
+
+## FTP Download Excel file
+```{r ftp_download}
+
+# FTP target file
+ftp_download <- "testtable_source_new.xlsx"
+# FTP download
+download.file(ftp_server + "/" + ftp_path + "/" + df_excel_filename + "?" + ftp_user + ":" + ftp_pass)
 
 ```
