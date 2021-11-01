@@ -1,0 +1,49 @@
+---
+title: "Excel to FTP Example"
+author: "Dykema, Bill"
+date: "2021/10/31"
+output:
+  html_document: default
+---
+
+## Notes for exporting to HTML file:
+#### Set working directory: setwd("[Working Folder]")
+#### install.packages("rmarkdown")
+#### Knit to HTML for easy viewing: rmarkdown::render("excel-email.Rmd", "all")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Excel and CSV read and write example
+
+## Load R libraries
+```{r libraries}
+
+# Excel packages
+#install.packages("xlsx")
+library(xlsx)
+
+
+```
+
+## Read Excel file
+```{r read_excel_file}
+
+# Excel file name
+df_excel_filename <- "testtable_source.xlsx"
+
+# Create DataFrame from Excel file
+df_excel <- read.xlsx2(df_excel_filename, sheetIndex=1)
+
+# View your new DataFrame
+df_excel
+
+```
+
+## FTP Excel file
+```{r ftp_email}
+
+# Setup?
+
+```

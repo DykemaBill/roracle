@@ -15,7 +15,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Excel and CSV read and write example
+# Excel to email example
 
 ## Load R libraries
 ```{r libraries}
