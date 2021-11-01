@@ -50,6 +50,8 @@ ftp_user <- "username"
 ftp_pass <- "password"
 ftp_path <- "~"
 
+## For testing: https://dlptest.com/ftp-test
+
 ```
 
 ## FTP Upload Excel file
