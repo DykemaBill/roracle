@@ -1,7 +1,7 @@
 ---
 title: "Excel to FTP Example"
 author: "Dykema, Bill"
-date: "2021/10/31"
+date: "2022/09/08"
 output:
   html_document: default
 ---
@@ -9,35 +9,18 @@ output:
 ## Notes for exporting to HTML file:
 #### Set working directory: setwd("[Working Folder]")
 #### install.packages("rmarkdown")
-#### Knit to HTML for easy viewing: rmarkdown::render("excel-email.Rmd", "all")
+#### Knit to HTML for easy viewing: rmarkdown::render("excel-ftp.Rmd", "all")
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Excel and CSV read and write example
-
 ## Load R libraries
 ```{r libraries}
 
-# Excel packages
-#install.packages("xlsx")
-library(xlsx)
-
-
-```
-
-## Read Excel file
-```{r read_excel_file}
-
-# Excel file name
-df_excel_filename <- "testtable_source.xlsx"
-
-# Create DataFrame from Excel file
-df_excel <- read.xlsx2(df_excel_filename, sheetIndex=1)
-
-# View your new DataFrame
-df_excel
+# RCurl package
+#install.packages("RCurl")
+library(RCurl)
 
 ```
 
@@ -45,12 +28,16 @@ df_excel
 ```{r ftp_setup}
 
 # FTP site details
-ftp_server <- "ftp.servername.com"
+ftp_server <- "localhost"
+ftp_port <- 21
+ftp_url <- paste(ftp_server, ftp_port, sep= ":")
 ftp_user <- "username"
 ftp_pass <- "password"
-ftp_path <- "~"
-
-## For testing: https://dlptest.com/ftp-test
+ftp_credentials <- paste(ftp_user, ftp_pass, sep = ":")
+ftp_path <- "testfolder"
+ftp_file <- "download_file.csv"
+ftp_path_url <- paste(ftp_path, ftp_file, sep = "/")
+ftp_remote_file <- paste("ftp://", ftp_credentials, "@", ftp_url, "/", ftp_path_url, sep = "")
 
 ```
 
@@ -58,16 +45,14 @@ ftp_path <- "~"
 ```{r ftp_upload}
 
 # FTP upload
-
+ftpUpload(what = ftp_file, to = ftp_remote_file)
 
 ```
 
 ## FTP Download Excel file
 ```{r ftp_download}
 
-# FTP target file
-ftp_download <- "testtable_source_new.xlsx"
 # FTP download
-download.file(ftp_server + "/" + ftp_path + "/" + df_excel_filename + "?" + ftp_user + ":" + ftp_pass)
+download.file(ftp_remote_file, destfile = ftp_file)
 
 ```

@@ -29,5 +29,5 @@ R example writing to and reading from Oracle
     R Markdown to read from API and write to Oracle table
 - ## [excel-email](https://github.com/DykemaBill/roracle/blob/main/excel-email.Rmd) :notebook: [HTML output](https://github.com/DykemaBill/roracle/blob/main/excel-email.html)
     R Markdown to email Excel file
-- ## [excel-ftp](https://github.com/DykemaBill/roracle/blob/main/excel-ftp.Rmd) :notebook: [HTML output](https://github.com/DykemaBill/roracle/blob/main/excel-ftp.html)
+- ## [excel-ftp](https://github.com/DykemaBill/roracle/blob/main/excel-ftp.Rmd) :notebook:
     R Markdown to FTP Excel file
